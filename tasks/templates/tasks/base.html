@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TaskMate{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/style.css' %}">
+</head>
+<body>
+    <div class="app-container">
+
+        <aside class="sidebar">
+            <a href="{% url 'task_list' %}" class="brand">
+                <span class="brand-icon">T</span>
+                <span>TaskMate</span>
+            </a>
+
+            <div class="sidebar-group">
+                <p class="sidebar-label">WORKSPACE</p>
+
+                <nav>
+                    <a href="{% url 'task_list' %}" class="nav-link active">
+                        <span class="nav-symbol">▦</span>
+                        Dashboard
+                    </a>
+
+                    <a href="{% url 'task_create' %}" class="nav-link">
+                        <span class="nav-symbol">＋</span>
+                        New assignment
+                    </a>
+                </nav>
+            </div>
+
+            <div class="sidebar-note">
+                <span class="sidebar-note-icon">✦</span>
+                <strong>Make every day count.</strong>
+                <p>Keep your academic work organised, one task at a time.</p>
+            </div>
+
+            <div class="sidebar-footer">
+                <span class="footer-dot"></span>
+                <span>Student workspace</span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <div>
+                    <p class="topbar-label">TASKMATE / WORKSPACE</p>
+                    <h2>{% block page_heading %}Dashboard{% endblock %}</h2>
+                </div>
+
+                <a href="{% url 'task_create' %}" class="button button-primary">
+                    <span>＋</span> Add assignment
+                </a>
+            </header>
+
+            <section class="page-content">
+                {% block content %}
+                {% endblock %}
+            </section>
+
+        </main>
+    </div>
+
+    <script src="{% static 'tasks/js/main.js' %}"></script>
+</body>
+</html>

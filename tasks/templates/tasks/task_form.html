@@ -1,0 +1,55 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}{{ page_title }} | TaskMate{% endblock %}
+{% block page_heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <div class="form-heading">
+        <h1>{{ page_title }}</h1>
+        <p>Enter the details of your assignment or task below.</p>
+    </div>
+
+    <form method="POST" class="task-form">
+
+        {% csrf_token %}
+
+        {% for field in form %}
+
+        <div class="form-group">
+
+            <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+            </label>
+
+            {{ field }}
+
+            {% if field.errors %}
+                <div class="field-error">
+                    {{ field.errors }}
+                </div>
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+        <div class="form-actions">
+
+            <a href="{% url 'task_list' %}" class="button button-secondary">
+                Cancel
+            </a>
+
+            <button type="submit" class="button button-primary">
+                Save Task
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

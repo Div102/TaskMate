@@ -1,0 +1,41 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Delete Task | TaskMate{% endblock %}
+{% block page_heading %}Delete Task{% endblock %}
+
+{% block content %}
+
+<div class="delete-container">
+
+    <div class="delete-icon">!</div>
+
+    <h1>Delete this task?</h1>
+
+    <p>
+        Are you sure you want to delete
+        <strong>{{ task.title }}</strong>?
+    </p>
+
+    <p class="warning-text">
+        This action cannot be undone.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-actions">
+
+            <a href="{% url 'task_list' %}" class="button button-secondary">
+                Cancel
+            </a>
+
+            <button type="submit" class="button button-danger">
+                Yes, Delete Task
+            </button>
+
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}{{ task.title }} | TaskMate{% endblock %}
+{% block page_heading %}Assignment Details{% endblock %}
+
+{% block content %}
+
+<div class="detail-navigation">
+    <a href="{% url 'task_list' %}">← Back to dashboard</a>
+</div>
+
+<div class="detail-layout">
+
+    <main class="detail-main">
+
+        <section class="detail-card">
+
+            <div class="detail-header">
+                <div>
+                    <span class="detail-category">STUDENT ASSIGNMENT</span>
+                    <h1>{{ task.title }}</h1>
+                </div>
+
+                <span class="status status-{{ task.status }}">
+                    {{ task.get_status_display }}
+                </span>
+            </div>
+
+            <div class="detail-divider"></div>
+
+            <div class="detail-description">
+                <h2>Description</h2>
+                <p>
+                    {{ task.description|default:"No description was provided for this assignment."|linebreaksbr }}
+                </p>
+            </div>
+
+            <div class="detail-divider"></div>
+
+            <div class="detail-information">
+
+                <div>
+                    <span>Due date</span>
+                    <strong>{{ task.due_date|date:"F d, Y" }}</strong>
+                </div>
+
+                <div>
+                    <span>Date created</span>
+                    <strong>{{ task.created_at|date:"F d, Y" }}</strong>
+                </div>
+
+                <div>
+                    <span>Last updated</span>
+                    <strong>{{ task.updated_at|date:"F d, Y" }}</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <aside class="detail-sidebar">
+
+        <section class="detail-card">
+            <h2>Manage assignment</h2>
+            <p class="detail-hint">Update the status of this assignment.</p>
+
+            <form method="POST"
+                  action="{% url 'task_status_update' task.pk %}"
+                  class="detail-status-form">
+
+                {% csrf_token %}
+
+                <label for="status">Current status</label>
+
+                <select name="status" id="status">
+                    <option value="pending"
+                        {% if task.status == 'pending' %}selected{% endif %}>
+                        Pending
+                    </option>
+
+                    <option value="in_progress"
+                        {% if task.status == 'in_progress' %}selected{% endif %}>
+                        In Progress
+                    </option>
+
+                    <option value="completed"
+                        {% if task.status == 'completed' %}selected{% endif %}>
+                        Completed
+                    </option>
+                </select>
+
+                <button type="submit" class="button button-primary">
+                    Update status
+                </button>
+
+            </form>
+
+            <div class="detail-divider"></div>
+
+            <a href="{% url 'task_update' task.pk %}"
+               class="button button-secondary detail-action">
+                Edit assignment
+            </a>
+
+            <a href="{% url 'task_delete' task.pk %}"
+               class="button button-danger detail-action">
+                Delete assignment
+            </a>
+
+        </section>
+
+    </aside>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,282 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}Dashboard | TaskMate{% endblock %}
+{% block page_heading %}Academic Dashboard{% endblock %}
+
+{% block content %}
+<!-- Welcome -->
+<section class="academic-welcome">
+  <div>
+    <span class="welcome-tag">YOUR ACADEMIC SPACE</span>
+    <h1>Stay on top of your work.</h1>
+    <p>Plan your assignments, manage deadlines and keep making progress.</p>
+  </div>
+
+  <a href="{% url 'task_create' %}" class="button button-primary">
+    ＋ New assignment
+  </a>
+</section>
+
+<!-- Overview -->
+<section class="academic-overview">
+  <div class="overview-heading">
+    <div>
+      <h2>Academic overview</h2>
+      <p>A quick look at your current workload.</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-label">
+        <span class="stat-indicator indicator-navy"></span>
+        Total assignments
+      </div>
+      <h3>{{ total_count }}</h3>
+      <p>All your recorded tasks</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-label">
+        <span class="stat-indicator indicator-amber"></span>
+        Pending
+      </div>
+      <h3>{{ pending_count }}</h3>
+      <p>Yet to be started</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-label">
+        <span class="stat-indicator indicator-blue"></span>
+        In progress
+      </div>
+      <h3>{{ progress_count }}</h3>
+      <p>Currently being worked on</p>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-label">
+        <span class="stat-indicator indicator-green"></span>
+        Completed
+      </div>
+      <h3>{{ completed_count }}</h3>
+      <p>Successfully finished</p>
+    </article>
+  </div>
+</section>
+
+<!-- Progress and deadlines -->
+<section class="academic-summary">
+  <article class="summary-panel completion-panel">
+    <div class="summary-title">
+      <div>
+        <h2>Completion progress</h2>
+        <p>Your overall task completion rate</p>
+      </div>
+      <strong>{{ completion_rate }}%</strong>
+    </div>
+
+    <div class="academic-progress-track">
+      <div
+        class="academic-progress-fill"
+        style="width: {{ completion_rate }}%;"
+      ></div>
+    </div>
+
+    <div class="progress-caption">
+      <span
+        >{{ completed_count }} completed out of {{ total_count }} tasks</span
+      >
+      <span>{{ pending_count }} pending</span>
+    </div>
+  </article>
+
+  <article class="summary-panel deadline-panel">
+    <h2>Deadline overview</h2>
+
+    <div class="deadline-row">
+      <div class="deadline-symbol overdue-symbol">!</div>
+      <div>
+        <strong>{{ overdue_count }} overdue</strong>
+        <p>Past their due dates</p>
+      </div>
+    </div>
+
+    <div class="deadline-row">
+      <div class="deadline-symbol upcoming-symbol">◷</div>
+      <div>
+        <strong>{{ upcoming_count }} upcoming</strong>
+        <p>Due within the next seven days</p>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- Upcoming assignments -->
+<section class="academic-section">
+  <div class="section-heading">
+    <div>
+      <h2>Upcoming deadlines</h2>
+      <p>Assignments that need your attention soon.</p>
+    </div>
+    <span class="section-meta">NEXT 7 DAYS</span>
+  </div>
+
+  <div class="upcoming-list">
+    {% for task in upcoming_tasks %}
+    <div class="upcoming-item">
+      <div class="upcoming-date-marker"></div>
+
+      <div class="upcoming-information">
+        <strong>{{ task.title }}</strong>
+        <span>Due {{ task.due_date|date:"M d, Y" }}</span>
+      </div>
+
+      <span class="status status-{{ task.status }}">
+        {{ task.get_status_display }}
+      </span>
+    </div>
+    {% empty %}
+    <div class="simple-empty">No upcoming deadlines. You're all caught up.</div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Task list -->
+<section class="academic-section my-tasks-section">
+  <div class="section-heading">
+    <div>
+      <h2>My assignments</h2>
+      <p>Keep track of everything you need to get done.</p>
+    </div>
+    <a href="{% url 'task_create' %}" class="text-link"> + Add assignment </a>
+  </div>
+
+  <form method="GET" class="task-toolbar">
+    <div class="academic-search">
+      <span>⌕</span>
+      <input
+        type="search"
+        name="q"
+        placeholder="Search assignments..."
+        value="{{ search_query }}"
+      />
+    </div>
+
+    <select name="status" class="academic-filter">
+      <option value="">All statuses</option>
+
+      <option
+        value="pending"
+        {%
+        if
+        selected_status=""
+        ="pending"
+        %}selected{%
+        endif
+        %}
+      >
+        Pending
+      </option>
+
+      <option
+        value="in_progress"
+        {%
+        if
+        selected_status=""
+        ="in_progress"
+        %}selected{%
+        endif
+        %}
+      >
+        In Progress
+      </option>
+
+      <option
+        value="completed"
+        {%
+        if
+        selected_status=""
+        ="completed"
+        %}selected{%
+        endif
+        %}
+      >
+        Completed
+      </option>
+    </select>
+
+    <button type="submit" class="button button-filter">Filter</button>
+
+    {% if search_query or selected_status %}
+    <a href="{% url 'task_list' %}" class="clear-link">Clear</a>
+    {% endif %}
+  </form>
+
+  <div class="academic-task-list">
+    {% for task in tasks %}
+    <article class="academic-task">
+      <div class="academic-task-main">
+        <span
+          class="task-status-indicator status-marker-{{ task.status }}"
+        ></span>
+
+        <div>
+          <h3>
+            <a href="{% url 'task_detail' task.pk %}"> {{ task.title }} </a>
+          </h3>
+
+          <p>
+            {{ task.description|default:"No description
+            provided."|truncatechars:120 }}
+          </p>
+
+          <span class="academic-task-date">
+            Due {{ task.due_date|date:"M d, Y" }}
+          </span>
+        </div>
+      </div>
+
+      <div class="academic-task-actions">
+        <span class="status status-{{ task.status }}">
+          {{ task.get_status_display }}
+        </span>
+
+        <a href="{% url 'task_detail' task.pk %}" class="text-link"> View </a>
+
+        <a href="{% url 'task_update' task.pk %}" class="text-link"> Edit </a>
+
+        <a href="{% url 'task_delete' task.pk %}" class="text-link danger-link">
+          Delete
+        </a>
+      </div>
+    </article>
+
+    {% empty %}
+
+    <div class="academic-empty">
+      <div class="empty-mark">T</div>
+      <h3>No assignments found</h3>
+
+      <p>
+        {% if search_query or selected_status %} Try another search or change
+        your status filter. {% else %} Your workspace is ready. Add your first
+        assignment to get started. {% endif %}
+      </p>
+
+      {% if search_query or selected_status %}
+      <a href="{% url 'task_list' %}" class="button button-secondary">
+        Clear filters
+      </a>
+      {% else %}
+      <a href="{% url 'task_create' %}" class="button button-primary">
+        Add your first assignment
+      </a>
+      {% endif %}
+    </div>
+
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
