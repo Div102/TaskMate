@@ -12,6 +12,7 @@ db.sqlite3
 .env
 .env.*
 !.env.example
+.vercel/
 
 staticfiles/
 media/
